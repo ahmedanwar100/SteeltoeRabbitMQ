@@ -47,13 +47,14 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 
-app.MapPost("/product", (AddProductRequestDTO request, RabbitTemplate _rabbitTemplate, RabbitAdmin _rabbitAdmin) =>
+app.MapPost("/product", async (AddProductRequestDTO request, RabbitTemplate _rabbitTemplate, RabbitAdmin _rabbitAdmin
+    ,CancellationToken cancellationToken) =>
 {
     var msg = new Message() {Type="Information", Body = "Hi there from over here." };
 
-    _rabbitTemplate.ConvertAndSend(Queues.ProductAddQueue, msg);
+    await _rabbitTemplate.ConvertAndSendAsync(Queues.ProductAddQueue, msg, cancellationToken);
 
-    return Results.Ok("Product Added");
+    return Results.Ok("Product Added Successfully");
 })
 .WithName("GetWeatherForecast");
 app.Run();
